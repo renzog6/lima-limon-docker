@@ -1,0 +1,38 @@
+# Create MySQL Image
+FROM mysql:8.0
+
+CMD ["--default-authentication-plugin=mysql_native_password"]
+
+ENV MYSQL_ROOT_PASSWORD=resconi.843
+ENV MYSQL_DATABASE=lima_limon
+ENV MYSQL_USER=limag6
+ENV MYSQL_PASSWORD=resconi.843
+
+# Install necessary tools
+RUN apt-get update && apt-get install -y \
+    cron \
+    ssmtp
+
+# Configure ssmtp to use Gmail server
+RUN echo "mailhub=smtp.gmail.com:587\n\
+    UseSTARTTLS=YES\n\
+    FromLineOverride=YES\n\
+    AuthUser=your_email@gmail.com\n\
+    AuthPass=your_email_password\n\
+    TLS_CA_File=/etc/pki/tls/certs/ca-bundle.crt" > /etc/ssmtp/ssmtp.conf
+
+# Add backup script
+ADD backup.sh /backup.sh
+RUN chmod +x /backup.sh
+
+# Add cron configuration file
+ADD crontab /etc/cron.d/backup-cron
+RUN chmod 0644 /etc/cron.d/backup-cron
+RUN crontab /etc/cron.d/backup-cron
+RUN touch /var/log/cron.log
+
+# Expose port
+EXPOSE 3306
+
+# Start cron in the background
+CMD cron && tail -f /var/log/cron.log
