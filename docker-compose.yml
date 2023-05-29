@@ -7,17 +7,19 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: lima-limon
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: resconi.843
+      MYSQL_DATABASE: lima_limon
+      MYSQL_USER: limag6
+      MYSQL_PASSWORD: resconi.843
     volumes:
       - ./mysql/mysql-data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
     ports:
       - 3307:3306
     networks:
-      - lima-network
+      lima-network:
+        aliases:
+          - alias-mysql
 
   lima-limon:
     container_name: lima-limon
