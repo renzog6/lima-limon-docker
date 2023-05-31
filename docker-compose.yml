@@ -21,6 +21,24 @@ services:
         aliases:
           - alias-mysql
 
+  lima-backup:
+    container_name: lima-backup
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_CONTAINER_NAME: lima-mysql
+      MYSQL_DATABASE: lima_limon
+      MYSQL_ROOT_PASSWORD: resconi.843
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - lima-mysql
+    networks:
+      - lima-network
+    command: crond -f -d 8
+    restart: always
+
   lima-limon:
     container_name: lima-limon
     image: lima-limon:latest
